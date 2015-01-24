@@ -1,0 +1,20 @@
+{
+  "name": "FunServer",
+  "version": "0.0.1",
+  "homepage": "https://github.com/zhailei31665431/FunServer",
+  "authors": [
+    "zhaieiMac <zhailei2011@gmail.com>"
+  ],
+  "description": "FunServer",
+  "moduleType": [
+    "node"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

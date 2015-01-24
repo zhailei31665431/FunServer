@@ -1,0 +1,23 @@
+{
+  "name": "FunServer",
+  "version": "0.0.1",
+  "description": "FunServer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhailei31665431/FunServer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zhailei31665431/FunServer/issues"
+  },
+  "homepage": "https://github.com/zhailei31665431/FunServer",
+  "devDependencies": {
+    "express": "^4.11.1",
+    "gulp": "^3.8.10"
+  }
+}

@@ -1,12 +1,3 @@
-# FunServer
-
-
-一个简单的本地前端开发环境，使用gulp+browserSync+express模拟在服务端的数据
-
-
-gulp用来启动browerSync,expressRouter用来监控请求响应返回的信息，可以使用restful写法，详情见下面代码
-
-
 'use strict';
 
 // Include Gulp & Tools We'll Use
@@ -23,7 +14,7 @@ var router = express.Router();
 var _ = require('underscore');
 var fs = require('fs');
 
-router.route('/url')
+router.route('/hahas')
   .all(function(req,res,next){
     next();
   })
@@ -58,6 +49,7 @@ router.route('/url')
 
 // Watch Files For Changes & Reload
 gulp.task('serve',function(){
+  
   browserSync({
     notify: false,
     server: {
@@ -69,12 +61,7 @@ gulp.task('serve',function(){
       middleware:router
     }
   });
+
 });
-
-# 安装
-
-npm install
-
-bower install
 
 

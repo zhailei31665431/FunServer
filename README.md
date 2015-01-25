@@ -7,69 +7,71 @@
 gulp用来启动browerSync,expressRouter用来监控请求响应返回的信息，可以使用restful写法，详情见下面代码
 
 
-'use strict';<br>
+```html
+'use strict';
 
-// Include Gulp & Tools We'll Use<br>
-var gulp = require('gulp');<br>
-var del = require('del');<br>
-var browserSync = require('browser-sync');<br>
-var reload = browserSync.reload;<br>
-<br>
-// Clean Output Directory<br>
-gulp.task('clean', del.bind(null, ['.tmp', 'build']));<br>
-<br>
-var express = require('express');<br>
-var router = express.Router();<br>
-var _ = require('underscore');<br>
-var fs = require('fs');<br>
-<br>
-router.route('/url')<br>
-  .all(function(req,res,next){<br>
-    next();<br>
-  })<br>
-  .get(function(req,res,next){<br>
-    next();<br>
-  })<br>
-  .post(function(req, res, next){<br>
-    var id = {id:parseInt(Math.random(0,100))+''+parseInt(Math.random(0,100))+''+parseInt(Math.random(0,100))}<br>
-    var Backdatas = {}<br>
-    req.on('data',function(data){<br>
-      var datas = {}<br>
-      _.each(data.toString().split('&'),function(item){<br>
-        var splitData = item.split('=');<br>
-        Backdatas[splitData[0]] = splitData[1]<br>
-        datas[splitData[0]] = splitData[1];<br>
-      })<br>
-      fs.writeFile('test/data.json',JSON.stringify(_.extend(datas,id)),function(err){<br>
-        if(err) console.log(err)<br>
-      })<br>
-    })<br>
-    req.on('end',function(data){<br>
-      res.end(JSON.stringify({code:0,data:(_.extend(Backdatas,id)),systime:Date.parse(new Date())}));  <br>
-    })<br>
-    next()<br>
-  })<br>
-  .put(function(req,res,next){<br>
-    //更改文件等<br>
-  })<br>
-  .delete(function(req,res,next){<br>
-    //返回信息<br>
-  })<br>
-<br>
-// Watch Files For Changes & Reload<br>
-gulp.task('serve',function(){<br>
-  browserSync({<br>
-    notify: false,<br>
-    server: {<br>
-      baseDir: ['.tmp', 'src', 'test'],<br>
-      routes:{<br>
-        "/bower_components":"bower_components",<br>
-        "/test":"test"<br>
-      },<br>
-      middleware:router<br>
-    }<br>
-  });<br>
-});<br>
+// Include Gulp & Tools We'll Use
+var gulp = require('gulp');
+var del = require('del');
+var browserSync = require('browser-sync');
+var reload = browserSync.reload;
+
+// Clean Output Directory
+gulp.task('clean', del.bind(null, ['.tmp', 'build']));
+
+var express = require('express');
+var router = express.Router();
+var _ = require('underscore');
+var fs = require('fs');
+
+router.route('/url')
+  .all(function(req,res,next){
+    next();
+  })
+  .get(function(req,res,next){
+    next();
+  })
+  .post(function(req, res, next){
+    var id = {id:parseInt(Math.random(0,100))+''+parseInt(Math.random(0,100))+''+parseInt(Math.random(0,100))}
+    var Backdatas = {}
+    req.on('data',function(data){
+      var datas = {}
+      _.each(data.toString().split('&'),function(item){
+        var splitData = item.split('=');
+        Backdatas[splitData[0]] = splitData[1]
+        datas[splitData[0]] = splitData[1];
+      })
+      fs.writeFile('test/data.json',JSON.stringify(_.extend(datas,id)),function(err){
+        if(err) console.log(err)
+      })
+    })
+    req.on('end',function(data){
+      res.end(JSON.stringify({code:0,data:(_.extend(Backdatas,id)),systime:Date.parse(new Date())}));  
+    })
+    next()
+  })
+  .put(function(req,res,next){
+    //更改文件等
+  })
+  .delete(function(req,res,next){
+    //返回信息
+  })
+
+// Watch Files For Changes & Reload
+gulp.task('serve',function(){
+  browserSync({
+    notify: false,
+    server: {
+      baseDir: ['.tmp', 'src', 'test'],
+      routes:{
+        "/bower_components":"bower_components",
+        "/test":"test"
+      },
+      middleware:router
+    }
+  });
+});
+```
 
 # 安装
 

@@ -1,11 +1,8 @@
 # FunServer
 
+一个简单的本地前端开发环境，使用gulp+browserSync+express模拟前端+后端
 
-一个简单的本地前端开发环境，使用gulp+browserSync+express模拟在服务端的数据
-
-
-gulp用来启动browerSync,expressRouter用来监控请求响应返回的信息，可以使用restful写法，详情见下面代码
-
+gulp+browerSync用作服务器监控本地文件发生变化，及时更新浏览器。加入中间件expressRouter用来监控请求响应返回的自己定义的信息，可以使用restful写法，详情见下面代码
 
 ```html
 'use strict';

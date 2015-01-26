@@ -4,55 +4,24 @@
 
 gulp+browerSync用作服务器监控本地文件发生变化，及时更新浏览器。加入中间件expressRouter用来监控请求响应返回的自己定义的信息，可以使用restful写法，详情见下面代码
 
+
+#gulpfile.js
 ```html
+
 'use strict';
 
-// Include Gulp & Tools We'll Use
 var gulp = require('gulp');
 var del = require('del');
 var browserSync = require('browser-sync');
 var reload = browserSync.reload;
-
-// Clean Output Directory
-gulp.task('clean', del.bind(null, ['.tmp', 'build']));
 
 var express = require('express');
 var router = express.Router();
 var _ = require('underscore');
 var fs = require('fs');
 
-router.route('/url')
-  .all(function(req,res,next){
-    next();
-  })
-  .get(function(req,res,next){
-    next();
-  })
-  .post(function(req, res, next){
-    var id = {id:parseInt(Math.random(0,100))+''+parseInt(Math.random(0,100))+''+parseInt(Math.random(0,100))}
-    var Backdatas = {}
-    req.on('data',function(data){
-      var datas = {}
-      _.each(data.toString().split('&'),function(item){
-        var splitData = item.split('=');
-        Backdatas[splitData[0]] = splitData[1]
-        datas[splitData[0]] = splitData[1];
-      })
-      fs.writeFile('test/data.json',JSON.stringify(_.extend(datas,id)),function(err){
-        if(err) console.log(err)
-      })
-    })
-    req.on('end',function(data){
-      res.end(JSON.stringify({code:0,data:(_.extend(Backdatas,id)),systime:Date.parse(new Date())}));  
-    })
-    next()
-  })
-  .put(function(req,res,next){
-    //更改文件等
-  })
-  .delete(function(req,res,next){
-    //返回信息
-  })
+var routerFs = require('./routers/router')(router);
+gulp.task('clean', del.bind(null, ['.tmp', 'build']));
 
 // Watch Files For Changes & Reload
 gulp.task('serve',function(){
@@ -67,10 +36,14 @@ gulp.task('serve',function(){
       middleware:router
     }
   });
+  
 });
+
+
 ```
 
 #请求的服务器解析文件
+
 ```html
 
 var _ = require('underscore');
@@ -88,24 +61,22 @@ module.exports = function(router){
         next();
       })
       .post(function(req, res, next){
-        var id = parseInt(Math.random(0,100))+''+parseInt(Math.random(0,100))+''+parseInt(Math.random(0,100))
+        var id = parseInt(Math.random(0,100)*100)+''+parseInt(Math.random(0,100)*100)+''+parseInt(Math.random(0,100)*100);
         var Backdatas = {}
         req.on('data',function(data){
           var datas = eval("("+data+")");
           datas['id'] = id;
           var DataList = eval('('+fs.readFileSync('routers/files/project-list.json')+')');
-          var newData = _.clone(DataList["data"]['list'])
+          var newData = _.clone(DataList["data"]['list']);
           newData.unshift(datas);
           DataList['data']['list'] = newData
-          Backdatas = _.clone(DataList)
-          fs.writeFile('routers/files/project-list.json',JSON.stringify(_.clone(filesData)),function(err){
+          Backdatas = _.clone(datas)
+          fs.writeFile('routers/files/project-list.json',JSON.stringify(_.clone(DataList)),function(err){
             if(err) console.log(err)
           })
         })
-        req.on('end',function(data){
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({code:0,data:Backdatas,systime:Date.parse(new Date())}));  
-        })
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({code:0,data:Backdatas,systime:Date.parse(new Date())}));  
         next()
       })
       .put(function(req,res,next){
@@ -114,15 +85,13 @@ module.exports = function(router){
           var datas = eval("("+data+")");
           var DataList = eval('('+fs.readFileSync('routers/files/project-list.json')+')');
           var nowData  = _.clone(DataList['data']['list']);
-
           _.each(nowData,function(item){
             if(item["id"] == datas["id"]){
-              item = datas;
+              _.extend(item,datas)
             }
           })
-          DataList['data']['list'] = newData
-          
-          Backdatas = _.clone(DataList)
+          DataList['data']['list'] = nowData
+          Backdatas = _.clone(datas)
           fs.writeFile('routers/files/project-list.json',JSON.stringify(_.clone(DataList)),function(err){
             if(err) console.log(err)
           })
@@ -132,7 +101,46 @@ module.exports = function(router){
           res.end(JSON.stringify({code:0,data:Backdatas,systime:Date.parse(new Date())}));  
         })
       })
+    router.route('/spms/project/projects/:id')
+      .all(function(req,res,next){next()})
+      .put(function(req,res,next){
+        var url = req.url.split('/');
+        var id = url[url.length-1];
+        req.on('data',function(data){
+          var datas = eval("("+data+")");
+          var DataList = eval('('+fs.readFileSync('routers/files/project-list.json')+')');
+          var nowData  = _.clone(DataList['data']['list']);
+          _.each(nowData,function(item){
+            if(item["id"] == datas["id"]){
+              _.extend(item,datas)
+            }
+          })
+          DataList['data']['list'] = nowData
+          Backdatas = _.clone(datas);
+          fs.writeFile('routers/files/project-list.json',JSON.stringify(_.clone(DataList)),function(err){
+            if(err) console.log(err)
+          })
+        })
+        req.on('end',function(data){
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({code:0,data:Backdatas,systime:Date.parse(new Date())}));  
+        })
+        next()
+      })
       .delete(function(req,res,next){
+        var url = req.url.split('/');
+        var id = url[url.length-1];
+        var DataList = eval('('+fs.readFileSync('routers/files/project-list.json')+')');
+        var nowData  = _.clone(DataList['data']['list']);
+        nowData = _.filter(nowData,function(item){
+          return item['id']!=id
+        });
+        DataList['data']['list'] = nowData
+        fs.writeFile('routers/files/project-list.json',JSON.stringify(_.clone(DataList)),function(err){
+          if(err) console.log(err)
+        })
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({code:0,data:{true:1},systime:Date.parse(new Date())}));
         next()
       })
 }
@@ -142,7 +150,3 @@ module.exports = function(router){
 # 安装
 
 npm install
-
-bower install
-
-

@@ -1,3 +1,6 @@
+
+#点个赞呗~~~
+
 # FunServer
 
 一个简单的本地前端开发环境，使用gulp+browserSync+express模拟前端+后端

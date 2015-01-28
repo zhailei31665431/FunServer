@@ -161,3 +161,5 @@ module.exports = function(router){
 # 安装
 
 npm install
+
+gulp serve

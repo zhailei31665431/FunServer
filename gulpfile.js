@@ -10,11 +10,21 @@ var router = express.Router();
 var _ = require('underscore');
 var fs = require('fs');
 
-var routerFs = require('./routers/router')(router);
 gulp.task('clean', del.bind(null, ['.tmp', 'build']));
 
+//合并router文件，分散开发
+gulp.task('concatRoutes',function(){
+  var concat = require('gulp-concat');
+  gulp.src(['routers/a.js','routers/router/*.js','routers/b.js'])
+    .pipe(concat('router.js'))
+    .pipe(gulp.dest('routers'))
+})
+
 // Watch Files For Changes & Reload
-gulp.task('serve',function(){
+gulp.task('serve',['concatRoutes'],function(){
+
+  var routerFs = require('./routers/router')(router);
+
   browserSync({
     notify: false,
     server: {
@@ -27,6 +37,8 @@ gulp.task('serve',function(){
     }
   });
   
+  gulp.watch(['routers/router/*.js'],['concatRoutes']);//检测是否发生变化，重新合并文件，手动启动gulp serve
+
 });
 
 
